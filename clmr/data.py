@@ -36,8 +36,9 @@ class ContrastiveDataset(Dataset):
         batch = torch.split(audio, audio_length, dim=1)
         batch = torch.cat(batch[:-1])
         batch = batch.unsqueeze(dim=1)
-
+    
         if self.transform:
             batch = self.transform(batch)
-
+    
         return batch
+
