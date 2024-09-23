@@ -34,11 +34,17 @@ class ContrastiveDataset(Dataset):
     def concat_clip(self, n: int, audio_length: float) -> Tensor:
         audio, _ = self.dataset[n]
         batch = torch.split(audio, audio_length, dim=1)
-        batch = torch.cat(batch[:-1])
-        batch = batch.unsqueeze(dim=1)
+    
+        if len(batch) > 1:
+            batch = torch.cat(batch[:-1], dim=1)
+        else:
+            batch = batch[0]
+    
+        batch = batch.unsqueeze(dim=0)  # Change dim to 0 to maintain batch dimensions
     
         if self.transform:
             batch = self.transform(batch)
     
         return batch
+
 
