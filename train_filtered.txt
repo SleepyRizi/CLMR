@@ -250,7 +250,6 @@ jazz/jazz.00050.wav
 jazz/jazz.00051.wav
 jazz/jazz.00052.wav
 jazz/jazz.00053.wav
-jazz/jazz.00054.wav
 jazz/jazz.00055.wav
 jazz/jazz.00056.wav
 jazz/jazz.00057.wav
