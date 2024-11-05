@@ -4,18 +4,16 @@ from .model import Model
 
 
 class SampleCNN(Model):
-    def __init__(self, strides, supervised, out_dim):
+    def __init__(self, strides, in_channels=1,  supervised=False, out_dim=10):
         super(SampleCNN, self).__init__()
 
         self.strides = strides
         self.supervised = supervised
-        self.sequential = [
-            nn.Sequential(
-                nn.Conv1d(1, 128, kernel_size=3, stride=3, padding=0),
-                nn.BatchNorm1d(128),
-                nn.ReLU(),
-            )
-        ]
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_channels, 128, kernel_size=(3, 3), stride=(3, 3)),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+        )
 
         self.hidden = [
             [128, 128],
