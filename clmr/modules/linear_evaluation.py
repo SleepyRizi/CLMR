@@ -7,21 +7,7 @@ from torch import Tensor
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 from typing import Tuple
 from tqdm import tqdm
-import numpy as np
 
-def mixup_data(x, y, alpha=0.4):
-    '''Returns mixed inputs, pairs of targets, and lambda'''
-    if alpha > 0:
-        lam = np.random.beta(alpha, alpha)
-    else:
-        lam = 1.0
-
-    batch_size = x.size()[0]
-    index = torch.randperm(batch_size).to(x.device)
-
-    mixed_x = lam * x + (1 - lam) * x[index, :]
-    y_a, y_b = y, y[index]
-    return mixed_x, y_a, y_b, lam
 
 class LinearEvaluation(LightningModule):
     def __init__(self, args, encoder: nn.Module, hidden_dim: int, output_dim: int):
@@ -64,23 +50,13 @@ class LinearEvaluation(LightningModule):
 
     def training_step(self, batch, _) -> Tensor:
         x, y = batch
-        x = x.float()
-        y = y.long()
+        loss, preds = self.forward(x, y)
 
-        # Apply MixUp
-        x, targets_a, targets_b, lam = mixup_data(x, y, alpha=0.4)
-
-        # Forward pass
-        preds = self._forward_representations(x, y)
-
-        # Compute loss with MixUp criterion
-        loss = lam * self.criterion(preds, targets_a) + (1 - lam) * self.criterion(preds, targets_b)
-
-        # Log metrics
         self.log("Train/accuracy", self.accuracy(preds, y))
+        # self.log("Train/pr_auc", self.average_precision(preds, y))
         self.log("Train/loss", loss)
         return loss
-    
+
     def validation_step(self, batch, _) -> Tensor:
         x, y = batch
         loss, preds = self.forward(x, y)
@@ -422,5 +398,4 @@ class LinearEvaluation(LightningModule):
 
 #         tensor_dataset = TensorDataset(representations, ys)
 #         return tensor_dataset
-
 
